@@ -14,7 +14,139 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      capsule_collaborators: {
+        Row: {
+          can_edit: boolean
+          capsule_id: string
+          created_at: string
+          email: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          can_edit?: boolean
+          capsule_id: string
+          created_at?: string
+          email: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          can_edit?: boolean
+          capsule_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capsule_collaborators_capsule_id_fkey"
+            columns: ["capsule_id"]
+            isOneToOne: false
+            referencedRelation: "capsules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capsule_photos: {
+        Row: {
+          capsule_id: string
+          created_at: string
+          file_name: string
+          id: string
+          storage_path: string
+        }
+        Insert: {
+          capsule_id: string
+          created_at?: string
+          file_name: string
+          id?: string
+          storage_path: string
+        }
+        Update: {
+          capsule_id?: string
+          created_at?: string
+          file_name?: string
+          id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capsule_photos_capsule_id_fkey"
+            columns: ["capsule_id"]
+            isOneToOne: false
+            referencedRelation: "capsules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capsules: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          is_shared: boolean
+          notes: string
+          tags: string[]
+          title: string
+          unlock_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_shared?: boolean
+          notes?: string
+          tags?: string[]
+          title: string
+          unlock_date: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_shared?: boolean
+          notes?: string
+          tags?: string[]
+          title?: string
+          unlock_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

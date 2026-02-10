@@ -1,1 +1,4 @@
 project_id = "ttwmelgmgrtgojtorunx"
+
+[functions.generate-prompts]
+verify_jwt = false
