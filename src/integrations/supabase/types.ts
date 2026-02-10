@@ -7,8 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
@@ -16,28 +14,25 @@ export type Database = {
     Tables: {
       capsule_collaborators: {
         Row: {
-          can_edit: boolean
-          capsule_id: string
-          created_at: string
-          email: string
           id: string
-          user_id: string | null
+          capsule_id: string
+          collaborator_id: string
+          can_edit: boolean
+          created_at: string
         }
         Insert: {
-          can_edit?: boolean
-          capsule_id: string
-          created_at?: string
-          email: string
           id?: string
-          user_id?: string | null
+          capsule_id: string
+          collaborator_id: string
+          can_edit?: boolean
+          created_at?: string
         }
         Update: {
-          can_edit?: boolean
-          capsule_id?: string
-          created_at?: string
-          email?: string
           id?: string
-          user_id?: string | null
+          capsule_id?: string
+          collaborator_id?: string
+          can_edit?: boolean
+          created_at?: string
         }
         Relationships: [
           {
@@ -46,30 +41,31 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "capsules"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
+
       capsule_photos: {
         Row: {
-          capsule_id: string
-          created_at: string
-          file_name: string
           id: string
+          capsule_id: string
+          file_name: string
           storage_path: string
+          created_at: string
         }
         Insert: {
-          capsule_id: string
-          created_at?: string
-          file_name: string
           id?: string
+          capsule_id: string
+          file_name: string
           storage_path: string
+          created_at?: string
         }
         Update: {
-          capsule_id?: string
-          created_at?: string
-          file_name?: string
           id?: string
+          capsule_id?: string
+          file_name?: string
           storage_path?: string
+          created_at?: string
         }
         Relationships: [
           {
@@ -78,31 +74,114 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "capsules"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
+
       capsules: {
         Row: {
-          created_at: string
-          description: string
           id: string
-          is_shared: boolean
+          user_id: string
+          title: string
+          description: string
           notes: string
           tags: string[]
-          title: string
           unlock_date: string
+          is_shared: boolean
+          created_at: string
           updated_at: string
-          user_id: string
         }
         Insert: {
-          created_at?: string
-          description?: string
           id?: string
-          is_shared?: boolean
+          user_id: string
+          title: string
+          description?: string
           notes?: string
           tags?: string[]
-          title: string
           unlock_date: string
+          is_shared?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          description?: string
+          notes?: string
+          tags?: string[]
+          unlock_date?: string
+          is_shared?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+
+      profiles: {
+        Row: {
+          id: string
+          user_id: string
+          display_name: string
+          avatar_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          display_name?: string
+          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          display_name?: string
+          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+    }
+
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DefaultSchema = DatabaseWithoutInternals["public"]
+
+export type Tables<
+  TableName extends keyof DefaultSchema["Tables"]
+> = DefaultSchema["Tables"][TableName]["Row"]
+
+export type TablesInsert<
+  TableName extends keyof DefaultSchema["Tables"]
+> = DefaultSchema["Tables"][TableName]["Insert"]
+
+export type TablesUpdate<
+  TableName extends keyof DefaultSchema["Tables"]
+> = DefaultSchema["Tables"][TableName]["Update"]
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const          unlock_date: string
           updated_at?: string
           user_id: string
         }
