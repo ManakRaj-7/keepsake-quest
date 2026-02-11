@@ -8,6 +8,12 @@ export type Capsule = Tables<"capsules"> & {
   capsule_collaborators?: Tables<"capsule_collaborators">[];
 };
 
+const getMediaType = (file: File): string => {
+  if (file.type.startsWith("video/")) return "video";
+  if (file.type.startsWith("audio/")) return "audio";
+  return "image";
+};
+
 export function useCapsules() {
   const { user } = useAuth();
 
@@ -57,7 +63,7 @@ export function useCreateCapsule() {
       is_shared: boolean;
       tags: string[];
       shared_emails: string[];
-      photos: File[];
+      media_files: File[];
     }) => {
       if (!user) throw new Error("Not authenticated");
 
@@ -87,19 +93,22 @@ export function useCreateCapsule() {
         await supabase.from("capsule_collaborators").insert(collabs);
       }
 
-      // Upload photos
-      if (input.photos.length > 0) {
-        for (const photo of input.photos) {
-          const path = `${user.id}/${capsule.id}/${Date.now()}-${photo.name}`;
+      // Upload media files (photos, videos, audio)
+      if (input.media_files.length > 0) {
+        for (const file of input.media_files) {
+          const ext = file.name.split(".").pop() || "bin";
+          const path = `${user.id}/${capsule.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
           const { error: uploadError } = await supabase.storage
             .from("capsule-media")
-            .upload(path, photo);
+            .upload(path, file);
 
           if (!uploadError) {
+            const mediaType = getMediaType(file);
             await supabase.from("capsule_photos").insert({
               capsule_id: capsule.id,
               storage_path: path,
-              file_name: photo.name,
+              file_name: file.name,
+              media_type: mediaType,
             });
           }
         }

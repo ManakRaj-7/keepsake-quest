@@ -11,7 +11,8 @@ interface CapsuleCardProps {
 const CapsuleCard = ({ capsule, index }: CapsuleCardProps) => {
   const rotations = [-2, 1, -1, 2, 0];
   const rotation = rotations[index % rotations.length];
-  const isLocked = new Date(capsule.unlock_date) > new Date();
+  const unlockDate = new Date(capsule.unlock_date);
+  const isLocked = unlockDate > new Date();
   const firstPhoto = capsule.capsule_photos?.[0];
 
   return (
@@ -39,11 +40,10 @@ const CapsuleCard = ({ capsule, index }: CapsuleCardProps) => {
               <div className="text-center">
                 <Lock className="h-8 w-8 mx-auto mb-2 capsule-locked" />
                 <p className="text-xs text-muted-foreground font-body">
-                  Opens {new Date(capsule.unlock_date).toLocaleDateString("en-US", {
+                  Opens {unlockDate.toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
-                    year: "numeric",
-                  })}
+                  })} at {unlockDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                 </p>
               </div>
             ) : (

@@ -55,6 +55,7 @@ export type Database = {
           created_at: string
           file_name: string
           id: string
+          media_type: string
           storage_path: string
         }
         Insert: {
@@ -62,6 +63,7 @@ export type Database = {
           created_at?: string
           file_name: string
           id?: string
+          media_type?: string
           storage_path: string
         }
         Update: {
@@ -69,6 +71,7 @@ export type Database = {
           created_at?: string
           file_name?: string
           id?: string
+          media_type?: string
           storage_path?: string
         }
         Relationships: [
@@ -85,6 +88,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string
+          email_sent: boolean
           id: string
           is_shared: boolean
           notes: string
@@ -97,6 +101,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string
+          email_sent?: boolean
           id?: string
           is_shared?: boolean
           notes?: string
@@ -109,6 +114,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string
+          email_sent?: boolean
           id?: string
           is_shared?: boolean
           notes?: string
@@ -152,6 +158,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_auth_email: { Args: never; Returns: string }
       is_capsule_collaborator: {
         Args: { capsule_uuid: string }
         Returns: boolean
