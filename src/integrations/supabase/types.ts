@@ -152,7 +152,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_capsule_collaborator: {
+        Args: { capsule_uuid: string }
+        Returns: boolean
+      }
+      is_capsule_owner: { Args: { capsule_uuid: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
