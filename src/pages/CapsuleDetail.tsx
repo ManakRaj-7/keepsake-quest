@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useCapsule, getPublicUrl } from "@/hooks/useCapsules";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, Lock, Unlock, Users, Clock, Heart, Image } from "lucide-react";
+import { ArrowLeft, Calendar, Lock, Unlock, Users, Clock, Heart, Image, Film, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
@@ -37,9 +37,7 @@ const CapsuleDetail = () => {
   if (!capsule) {
     return (
       <div className="container mx-auto px-6 py-20 text-center">
-        <p className="font-display text-2xl text-muted-foreground">
-          Oops, that memory slipped away... 💨
-        </p>
+        <p className="font-display text-2xl text-muted-foreground">Oops, that memory slipped away... 💨</p>
         <Link to="/dashboard">
           <Button variant="outline" className="mt-4 font-body rounded-full">Back to Dashboard</Button>
         </Link>
@@ -48,9 +46,20 @@ const CapsuleDetail = () => {
   }
 
   const unlockDate = new Date(capsule.unlock_date);
-  const daysUntilUnlock = Math.ceil((unlockDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-  const photos = capsule.capsule_photos ?? [];
+  const diffMs = unlockDate.getTime() - Date.now();
+  const daysUntilUnlock = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  const hoursUntilUnlock = Math.ceil(diffMs / (1000 * 60 * 60));
+  const allMedia = capsule.capsule_photos ?? [];
+  const photos = allMedia.filter((m) => (m as any).media_type === "image" || !(m as any).media_type);
+  const videos = allMedia.filter((m) => (m as any).media_type === "video");
+  const audios = allMedia.filter((m) => (m as any).media_type === "audio");
   const collaborators = capsule.capsule_collaborators ?? [];
+
+  const formatCountdown = () => {
+    if (daysUntilUnlock > 1) return `${daysUntilUnlock} days`;
+    if (hoursUntilUnlock > 1) return `${hoursUntilUnlock} hours`;
+    return "less than an hour";
+  };
 
   return (
     <div className="container mx-auto max-w-2xl px-6 py-10">
@@ -80,7 +89,7 @@ const CapsuleDetail = () => {
 
         <h1 className="font-display text-4xl font-bold text-foreground mb-3">{capsule.title}</h1>
 
-        <div className="flex items-center gap-4 text-sm text-muted-foreground font-body mb-8">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground font-body mb-8">
           <span className="flex items-center gap-1.5">
             <Calendar className="h-4 w-4" />
             Created {new Date(capsule.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
@@ -88,8 +97,8 @@ const CapsuleDetail = () => {
           <span className="flex items-center gap-1.5">
             <Clock className="h-4 w-4" />
             {isLocked
-              ? `Opens in ${daysUntilUnlock} day${daysUntilUnlock !== 1 ? "s" : ""}`
-              : `Opened ${unlockDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`}
+              ? `Opens in ${formatCountdown()}`
+              : `Opened ${unlockDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} at ${unlockDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`}
           </span>
         </div>
 
@@ -98,12 +107,12 @@ const CapsuleDetail = () => {
             <Lock className="h-16 w-16 mx-auto mb-4 capsule-locked animate-float" />
             <h2 className="font-display text-2xl font-semibold text-foreground mb-2">This capsule is still sealed</h2>
             <p className="font-body text-muted-foreground mb-4">
-              {daysUntilUnlock > 30 ? "Patience... some memories are worth waiting for." : daysUntilUnlock > 7 ? "Almost there! The anticipation makes it sweeter." : "So close! Just a few more days..."}
+              {daysUntilUnlock > 30 ? "Patience... some memories are worth waiting for." : daysUntilUnlock > 7 ? "Almost there! The anticipation makes it sweeter." : "So close! Just a little more..."}
             </p>
             <div className="inline-flex items-center gap-2 rounded-full bg-muted px-5 py-2.5 text-sm font-body">
               <Clock className="h-4 w-4 text-muted-foreground" />
-              <span className="font-semibold text-foreground">{daysUntilUnlock}</span>
-              <span className="text-muted-foreground">days remaining</span>
+              <span className="font-semibold text-foreground">{formatCountdown()}</span>
+              <span className="text-muted-foreground">remaining</span>
             </div>
           </motion.div>
         ) : (
@@ -123,6 +132,39 @@ const CapsuleDetail = () => {
                       alt={photo.file_name}
                       className="rounded-xl w-full aspect-square object-cover sepia-overlay hover:filter-none transition-all duration-500"
                     />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Videos */}
+            {videos.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Film className="h-4 w-4 text-primary" />
+                  <p className="font-body text-xs uppercase tracking-wider text-muted-foreground">Videos</p>
+                </div>
+                <div className="space-y-3">
+                  {videos.map((v) => (
+                    <video key={v.id} controls className="rounded-xl w-full" src={getPublicUrl(v.storage_path)} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Audio */}
+            {audios.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Mic className="h-4 w-4 text-primary" />
+                  <p className="font-body text-xs uppercase tracking-wider text-muted-foreground">Audio</p>
+                </div>
+                <div className="space-y-3">
+                  {audios.map((a) => (
+                    <div key={a.id} className="rounded-xl bg-muted p-4">
+                      <p className="font-body text-xs text-muted-foreground mb-2">{a.file_name}</p>
+                      <audio controls className="w-full" src={getPublicUrl(a.storage_path)} />
+                    </div>
                   ))}
                 </div>
               </div>

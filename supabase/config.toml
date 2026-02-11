@@ -2,3 +2,6 @@ project_id = "ttwmelgmgrtgojtorunx"
 
 [functions.generate-prompts]
 verify_jwt = false
+
+[functions.send-capsule-emails]
+verify_jwt = false
